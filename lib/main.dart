@@ -1,4 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+import 'BottomSlidePopup.dart';
+import 'DimmedBottomSlidePopup.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,36 +11,79 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      // Application name
+    return CupertinoApp(
       title: 'Flutter Hello World',
-      // Application theme data, you can set the colors for the application as
-      // you want
-      theme: ThemeData(
-        // useMaterial3: false,
-        primarySwatch: Colors.blue,
-      ),
-      // A widget which will be started on application startup
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: Home(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final String title;
-  const MyHomePage({super.key, required this.title});  
+class Home extends StatefulWidget {
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  bool bottomSheetVisible = false;
+  bool dimmedBottomSheetVisible = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // The title text which will be shown on the action bar
-        title: Text(title),
+    return CupertinoPageScaffold(
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text("Animate"),
       ),
-      body: Center(
-        child: Text(
-          'Hello, World!',
-        ),
+      backgroundColor: CupertinoColors.white,
+      child: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CupertinoButton.filled(
+                  child: const Text("BottomSheet"),
+                  onPressed: () {
+                    setState(() {
+                      bottomSheetVisible = !bottomSheetVisible;
+                    });
+                  },
+                ),
+                CupertinoButton.filled(
+                  child: const Text("Dimmed BottomSheet"),
+                  onPressed: () {
+                    setState(() {
+                      dimmedBottomSheetVisible = !dimmedBottomSheetVisible;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          BottomSlidePopup(
+            visible: bottomSheetVisible,
+            duration: const Duration(milliseconds: 300),
+            child: const Image(
+              height: 400,
+              fit: BoxFit.cover,
+              image: NetworkImage(
+                "https://i.namu.wiki/i/yG6wJoPBUVKER411ZCxvew-lTwXe_3FyEFK1ndAKnvDgRjK_yC-h7USkOBX3Jdsv21zg39bam7ixkW81KGZTYg.webp",
+              ),
+            ),
+          ),
+          DimmedBottomSlidePopup(
+            visible: dimmedBottomSheetVisible,
+            duration: const Duration(milliseconds: 300),
+            onCancel: () => setState(() => dimmedBottomSheetVisible = false),
+            child: const Image(
+              height: 500,
+              fit: BoxFit.cover,
+              image: NetworkImage(
+                "https://i.namu.wiki/i/yG6wJoPBUVKER411ZCxvew-lTwXe_3FyEFK1ndAKnvDgRjK_yC-h7USkOBX3Jdsv21zg39bam7ixkW81KGZTYg.webp",
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
